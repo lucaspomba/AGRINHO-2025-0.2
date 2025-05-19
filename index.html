@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ligando o Campo à Cidade</title>
+<style>
+  /* Reset & base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f7f9fc;
+    color: #222;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  a {
+    color: #0b3d0b;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  /* Container */
+  .container {
+    max-width: 1200px;
+    padding: 0 20px;
+    margin: 0 auto;
+  }
+  /* Header / Hero */
+  header {
+    background: linear-gradient(135deg, #0b3d0b, #145214);
+    color: #fff;
+    padding: 120px 20px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header h1 {
+    font-size: 3.8rem;
+    margin: 0 0 20px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  header p {
+    font-size: 1.5rem;
+    max-width: 700px;
+    margin: 0 auto;
+    font-weight: 500;
+    text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+  }
+  .btn-primary {
+    margin-top: 40px;
+    background: #fff;
+    color: #0b3d0b;
+    border: none;
+    padding: 14px 36px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(11,61,11,0.4);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block;
+    user-select: none;
+  }
+  .btn-primary:hover {
+    background-color: #063206;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(6,50,6,0.8);
+  }
+  /* Section */
+  section {
+    padding: 80px 20px;
+    background: #fff;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  }
+  section:nth-of-type(even) {
+    background: #f0f7f0;
+  }
+  section h2 {
+    font-size: 2.6rem;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  section p {
+    max-width: 900px;
+    margin: 0 auto 20px;
+    font-size: 1.2rem;
+    color: #334155;
+  }
+  /* Grid for content cards */
+  .grid {
+    display: grid;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+  }
+  /* Card */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    text-align: center;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 12px 30px rgba(11,61,11,0.25);
+  }
+  /* Card Icon */
+  .card-icon {
+    font-size: 3.5rem;
+    color: #0b3d0b;
+    margin-bottom: 15px;
+  }
+  .card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    color: #1f2937;
+  }
+  .card p {
+    font-size: 1rem;
+    color: #475569;
+  }
+  /* Footer */
+  footer {
+    background: #0b3d0b;
+    color: #fff;
+    text-align: center;
+    padding: 25px 15px;
+    font-size: 1rem;
+  }
+  /* Scroll to Top button */
+  #scrollTopBtn {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: #0b3d0b;
+    color: #fff;
+    border: none;
+    padding: 15px 18px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(11,61,11,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 10;
+  }
+  #scrollTopBtn.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Responsive text scaling */
+  @media (max-width: 768px) {
+    header h1 {
+      font-size: 2.8rem;
+    }
+    header p {
+      font-size: 1.2rem;
+    }
+    section h2 {
+      font-size: 2rem;
+    }
+  }
+
+  /* Quiz Modal */
+  #quizModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom: 0;
+    background: rgba(11,61,11,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  #quizModal.show {
+    display: flex;
+  }
+  #quizContent {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    position: relative;
+  }
+  #quizContent h3 {
+    margin-top: 0;
+    color: #0b3d0b;
+    font-weight: 800;
+    font-size: 1.8rem;
+  }
+  #quizContent p {
+    font-size: 1.1rem;
+    color: #334155;
+  }
+  #quizContent ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 30px;
+  }
+  #quizContent ul li {
+    margin-bottom: 15px;
+  }
+  #quizContent label {
+    background: #f0f7f0;
+    display: block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #0b3d0b;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  #quizContent input[type="radio"] {
+    display: none;
+  }
+  #quizContent input[type="radio"]:checked + label {
+    background-color: #0b3d0b;
+    color: #fff;
+    border-color: #0b3d0b;
+  }
+  #quizContent button {
+    background: #0b3d0b;
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(11,61,11,0.6);
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  #quizContent button:hover:enabled {
+    background-color: #063206;
+  }
+  #quizCloseBtn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #0b3d0b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    user-select: none;
+  }
+  #quizCloseBtn:hover {
+    color: #063206;
+  }
+  /* Score display */
+  #quizScore {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0b3d0b;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>Ligando o Campo à Cidade</h1>
+    <p>Conectando vidas, culturas e oportunidades para um futuro mais sustentável e inovador.</p>
+    <button class="btn-primary" id="openQuizBtn">FAÇA UM QUIZ</button>
+  </div>
+</header>
+
+<main>
+  <section id="introduction" aria-label="Introdução">
+    <h2>O que significa ligar o campo à cidade?</h2>
+    <p>
+      "Ligando o Campo à Cidade" é uma iniciativa que busca promover a integração entre as áreas rurais e urbanas,
+      valorizando o potencial do campo e facilitando o acesso às oportunidades oferecidas pela cidade. Essa conexão
+      é fundamental para o desenvolvimento equilibrado, social e econômico, garantindo qualidade de vida e inovação
+      para todos.
+    </p>
+  </section>
+
+  <section id="benefits" aria-label="Benefícios">
+    <h2>Benefícios dessa conexão</h2>
+    <div class="grid">
+      <article class="card" tabindex="0">
+        <div class="card-icon" aria-hidden="true">🌱</div>
+        <h3>Desenvolvimento Sustentável</h3>
+        <p>Estimula práticas agrícolas responsáveis que respeitam o meio ambiente e fortalecem as comunidades rurais.</p>
+      </article>
+      <article class="card" tabindex="0">
+        <div class="card-icon" aria-hidden="true">📈</div>
+        <h3>Oportunidades Econômicas</h3>
+        <p>Integra cadeias produtivas, criando empregos e novos caminhos para o comércio e a inovação.</p>
+      </article>
+      <article class="card" tabindex="0">
+        <div class="card-icon" aria-hidden="true">🚜</div>
+        <h3>Inovação Agrícola</h3>
+        <p>Incorporação de tecnologia para aumentar a produtividade e reduzir impactos ambientais.</p>
+      </article>
+      <article class="card" tabindex="0">
+        <div class="card-icon" aria-hidden="true">🤝</div>
+        <h3>Fortalecimento Cultural</h3>
+        <p>Preserva tradições e promove o intercâmbio cultural entre o campo e a cidade.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="examples" aria-label="Exemplos práticos">
+    <h2>Como essa conexão acontece na prática?</h2>
+    <p>
+      Algumas ações que aproximam o campo e a cidade incluem:
+    </p>
+    <ul>
+      <li>Feiras e mercados de produtores locais nas cidades.</li>
+      <li>Projetos de sustentabilidade que envolvem comunidades rurais e urbanas.</li>
+      <li>Uso de tecnologias digitais para facilitar o comércio direto entre produtor e consumidor.</li>
+      <li>Investimentos em infraestrutura de transporte e comunicação.</li>
+    </ul>
+    <p>Esses exemplos demonstram que a ponte entre campo e cidade pode gerar benefícios para toda a sociedade.</p>
+  </section>
+
+  <section id="call-to-action" aria-label="Chamada para ação">
+    <h2>Junte-se a essa transformação!</h2>
+    <p>
+      Seja você um produtor rural, um empresário urbano ou um cidadão interessado, há um papel fundamental para todos
+      nessa conexão que transforma vidas e promove um futuro mais justo e sustentável.
+    </p>
+  </section>
+</main>
+
+<footer>
+  <p>© 2025 Ligando o Campo à Cidade - Lucas Cestaro Moreira</p>
+</footer>
+
+<button id="scrollTopBtn" aria-label="Voltar ao topo" title="Voltar ao topo">⬆️</button>
+
+<!-- Quiz Modal -->
+<div id="quizModal" role="dialog" aria-modal="true" aria-labelledby="quizTitle" aria-describedby="quizDesc">
+  <div id="quizContent">
+    <button id="quizCloseBtn" aria-label="Fechar quiz">&times;</button>
+    <h3 id="quizTitle">Quiz: Teste seus conhecimentos</h3>
+    <p id="quizDesc">Responda às perguntas a seguir sobre o tema "Ligando o Campo à Cidade".</p>
+    <form id="quizForm">
+      <!-- Questions will be dynamically injected here -->
+    </form>
+    <div style="text-align: center;">
+      <button id="nextBtn" disabled>Próxima</button>
+    </div>
+    <p id="quizScore" role="alert" aria-live="assertive"></p>
+  </div>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "O que significa 'Ligando o Campo à Cidade'?",
+      options: [
+        "Separar as áreas rurais e urbanas completamente",
+        "Promover a integração entre o campo e a cidade",
+        "Aumentar a urbanização do campo",
+        "Isolar comunidades rurais para proteção"
+      ],
+      answer: 1
+    },
+    {
+      question: "Qual um dos benefícios sociais da ligação campo-cidade?",
+      options: [
+        "Desenvolvimento sustentável",
+        "Redução dos empregos",
+        "Enfraquecimento cultural",
+        "Aumento da poluição urbana"
+      ],
+      answer: 0
+    },
+    {
+      question: "Que prática tecnológica ajuda na conexão campo-cidade?",
+      options: [
+        "Uso de tecnologia digital no comércio direto",
+        "Substituição completa da agricultura por indústria",
+        "Redução do acesso à internet no campo",
+        "Separação rígida entre produtores e consumidores"
+      ],
+      answer: 0
+    },
+    {
+      question: "Quais investimentos ajudam a aproximar o campo e a cidade?",
+      options: [
+        "Infraestrutura de transporte e comunicação",
+        "Construção de muros separadores",
+        "Restrição ao comércio local",
+        "Desligamento da energia elétrica no campo"
+      ],
+      answer: 0
+    },
+    {
+      question: "Como o fortalecimento cultural acontece nessa conexão?",
+      options: [
+        "Eliminando tradições rurais",
+        "Promovendo intercâmbio cultural entre campo e cidade",
+        "Restringindo as tradições a áreas urbanas",
+        "Aumentando o isolamento entre comunidades"
+      ],
+      answer: 1
+    },
+    {
+      question: "Qual a importância da inovação agrícola na ligação campo-cidade?",
+      options: [
+        "Diminuir a produtividade agrícola",
+        "Ignorar tecnologias digitais",
+        "Aumentar produtividade e reduzir impactos ambientais",
+        "Aumentar o consumo de combustíveis fósseis"
+      ],
+      answer: 2
+    },
+    {
+      question: "Como as feiras e mercados locais ajudam na conexão?",
+      options: [
+        "Separando produtores e consumidores",
+        "Facilitando o acesso direto a produtos locais",
+        "Diminuindo o comércio local",
+        "Promovendo apenas produtos industrializados"
+      ],
+      answer: 1
+    },
+    {
+      question: "Por que a conexão campo-cidade é importante para a sociedade?",
+      options: [
+        "Porque fortalece uma sociedade equilibrada e sustentável",
+        "Porque amplia o isolamento social",
+        "Porque reduz as oportunidades econômicas",
+        "Porque desvaloriza as áreas rurais"
+      ],
+      answer: 0
+    }
+  ];
+
+  const openQuizBtn = document.getElementById('openQuizBtn');
+  const quizModal = document.getElementById('quizModal');
+  const quizCloseBtn = document.getElementById('quizCloseBtn');
+  const quizForm = document.getElementById('quizForm');
+  const nextBtn = document.getElementById('nextBtn');
+  const quizScore = document.getElementById('quizScore');
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+
+  function renderQuestion(index) {
+    const q = quizData[index];
+    quizForm.innerHTML = '';
+    quizScore.textContent = '';
+    nextBtn.disabled = true;
+    nextBtn.textContent = index === quizData.length - 1 ? 'Enviar' : 'Próxima';
+
+    const questionEl = document.createElement('h4');
+    questionEl.textContent = `Pergunta ${index + 1} de ${quizData.length}: ${q.question}`;
+    questionEl.style.color = '#0b3d0b';
+    quizForm.appendChild(questionEl);
+
+    const ul = document.createElement('ul');
+    q.options.forEach((option, i) => {
+      const li = document.createElement('li');
+      const optionId = `q${index}_opt${i}`;
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'option';
+      input.id = optionId;
+      input.value = i;
+
+      input.addEventListener('change', () => {
+        nextBtn.disabled = false;
+      });
+
+      const label = document.createElement('label');
+      label.htmlFor = optionId;
+      label.textContent = option;
+
+      li.appendChild(input);
+      li.appendChild(label);
+      ul.appendChild(li);
+    });
+    quizForm.appendChild(ul);
+  }
+
+  function showScore() {
+    quizForm.innerHTML = '';
+    nextBtn.style.display = 'none';
+    quizScore.textContent = `Você acertou ${score} de ${quizData.length} perguntas! Parabéns!`;
+
+    const restartBtn = document.createElement('button');
+    restartBtn.textContent = 'Refazer Quiz';
+    restartBtn.style.marginTop = '20px';
+    restartBtn.addEventListener('click', () => {
+      currentQuestionIndex = 0;
+      score = 0;
+      nextBtn.style.display = 'inline-block';
+      renderQuestion(currentQuestionIndex);
+      quizScore.textContent = '';
+      nextBtn.disabled = true;
+    });
+    quizForm.appendChild(restartBtn);
+  }
+
+  openQuizBtn.addEventListener('click', () => {
+    quizModal.classList.add('show');
+    currentQuestionIndex = 0;
+    score = 0;
+    renderQuestion(currentQuestionIndex);
+    nextBtn.disabled = true;
+    nextBtn.style.display = 'inline-block';
+  });
+
+  quizCloseBtn.addEventListener('click', () => {
+    quizModal.classList.remove('show');
+  });
+
+  nextBtn.addEventListener('click', () => {
+    const selectedOption = quizForm.option ? quizForm.option.value : undefined;
+    if (selectedOption === undefined) {
+      return; // button disabled if none selected, so just a fallback
+    }
+    if (parseInt(selectedOption, 10) === quizData[currentQuestionIndex].answer) {
+      score++;
+    }
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizData.length) {
+      renderQuestion(currentQuestionIndex);
+      nextBtn.disabled = true;
+    } else {
+      showScore();
+    }
+  });
+
+  // Accessibility: focus on cards on hover using JS (focus styling done by browser)
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => card.focus());
+    card.addEventListener('mouseleave', () => card.blur());
+  });
+
+  // Scroll-to-top button
+  const scrollBtn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      scrollBtn.classList.add('show');
+    } else {
+      scrollBtn.classList.remove('show');
+    }
+  });
+  scrollBtn.addEventListener('click', () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+</script>
+</body>
+</html>
+
